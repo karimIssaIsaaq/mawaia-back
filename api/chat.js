@@ -67,7 +67,6 @@ router.post('/', async (req, res) => {
     });
 
     const gptData = await gptRes.json();
-    console.log("gptdata===============>",gptData)
     const reply = gptData?.choices?.[0]?.message?.content || 'Réponse indisponible.';
     console.log('[✅ GPT réponse]', reply);
 
@@ -88,7 +87,7 @@ router.post('/', async (req, res) => {
       })
     });
 
-    const insertText = await insertRes.text();
+    const insertText = await insertRes;
     console.log('[🗂️ Supabase] Insert:', insertText);
 
     res.status(200).json({ reply });
