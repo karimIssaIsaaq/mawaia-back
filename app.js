@@ -5,13 +5,24 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Autoriser toutes les origines
-app.use(cors({
-  origin: '*',
+const allowedOrigins = ['https://mawa-webapp.vercel.app'];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Autoriser si origine est absente (Postman) ou dans la whitelist
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('⛔ Accès interdit par CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
-}));
+  optionsSuccessStatus: 204 // Répond bien au preflight
+};
 
+// CORS middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes
