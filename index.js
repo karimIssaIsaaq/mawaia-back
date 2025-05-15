@@ -1,56 +1,48 @@
 // server.js
 const express = require('express');
-const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware CORS global : autorise toutes les origines
-app.use(cors({
-  origin: '*',
-  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// 1) Parse JSON bodies
+app.use(express.json());
 
-// Si vous préférez gérer manuellement les en-têtes CORS : décommentez la partie ci-dessous
-/*
+// 2) Manual CORS headers — runs on every request, before your routers
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
+  // 🌍 allow any origin
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  // which methods you want to allow
+  res.setHeader(
     'Access-Control-Allow-Methods',
-    'GET,POST,PUT,PATCH,DELETE,OPTIONS'
+    'GET, POST, PUT, PATCH, DELETE, OPTIONS'
   );
-  res.header(
+  // which headers the client can send
+  res.setHeader(
     'Access-Control-Allow-Headers',
     'Content-Type, Authorization'
   );
-  // Répondre directement aux requêtes OPTIONS (pré-flight)
+  // immediately answer OPTIONS (preflight) requests
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
+    return res.sendStatus(200);
   }
   next();
 });
-*/
 
-app.use(express.json());
-
-// Vos routes (vérifiez bien que vous n’utilisez QUE des chemins relatifs, ex. '/mon-chemin')
+// 3) Mount your actual API routers
 const cleanupAPI = require('./api/cleanup-plantype');
 const chatAPI    = require('./api/chat');
-app.use('/cleanup', cleanupAPI);
-app.use('/chat',     chatAPI);
+
+// make sure your routers only use **relative** paths, e.g. '/do-stuff'
+app.use('/api/cleanup', cleanupAPI);
+app.use('/api/chat',    chatAPI);
 
 app.get('/', (req, res) => {
-  res.send('🌐 API Express opérationnelle avec CORS ouvert à tous');
+  res.send('🌐 API Express opérationnelle (CORS ouvert à tous)');
 });
 
-// 404 pour les routes inconnues
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route non trouvée' });
-});
-
-// Gestionnaire d’erreurs
+// 4) 404 + error handlers
+app.use((req, res) => res.status(404).json({ error: 'Route non trouvée' }));
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ error: err.message });
