@@ -5,10 +5,11 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-const allowedOrigins = ['*'];
+const allowedOrigins = ['https://mawa-webapp.vercel.app'];
 
 const corsOptions = {
   origin: function (origin, callback) {
+    console.log("calllllbackkkkkk",origin)
     // Autoriser si origine est absente (Postman) ou dans la whitelist
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -23,6 +24,7 @@ const corsOptions = {
 
 // CORS middleware
 app.use(cors(corsOptions));
+
 app.use(express.json());
 
 // Routes
