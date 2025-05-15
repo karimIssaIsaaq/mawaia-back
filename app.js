@@ -5,20 +5,13 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-const allowedOrigins = ['https://mawa-webapp.vercel.app'];
-
+// Autoriser toutes les origines
 app.use(cors({
-  origin: function (origin, callback) {
-    // Autoriser uniquement si l'origine est dans la whitelist
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('⛔ Accès interdit par CORS'));
-    }
-  },
+  origin: '*',
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
 }));
+
 app.use(express.json());
 
 // Routes
