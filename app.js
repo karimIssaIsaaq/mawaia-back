@@ -1,6 +1,5 @@
 // server.js
 const express = require('express');
-const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
@@ -21,7 +20,11 @@ app.use('/api/chat', chatAPI);
 
 // 4) Root + gestion 404/500
 app.get('/', (req, res) => res.send('🌐 API Express opérationnelle'));
-
+app.use((req, res) => res.status(404).json({ error: 'Route non trouvée' }));
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: err.message });
+});
 
 // 5) Démarrage
 app.listen(port, () => {
