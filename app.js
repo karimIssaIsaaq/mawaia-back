@@ -24,6 +24,9 @@ app.use(express.json());
 const cleanupAPI = require('./api/cleanup-plantype');
 app.use('/', cleanupAPI);
 
+const chatAPI = require('./api/chat');
+app.use('/', cleanupAPI);
+
 // Default route
 app.get('/', (req, res) => {
   res.send('🌐 API Express opérationnelle');
