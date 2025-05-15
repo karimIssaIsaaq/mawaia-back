@@ -3,36 +3,33 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-// ✅ Configuration CORS
 const allowedOrigins = ['https://mawa-webapp.vercel.app'];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    // Autoriser uniquement si l'origine est dans la whitelist
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('⛔ Accès interdit par CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
-  credentials: false
 }));
-
-app.options('*', cors()); // Gérer les pré-requêtes
-
-// Middleware
 app.use(express.json());
 
 // Routes
 const cleanupAPI = require('./api/cleanup-plantype');
-app.use('/', cleanupAPI);
-
 const chatAPI = require('./api/chat');
+
+app.use('/', cleanupAPI);
 app.use('/', chatAPI);
 
-// Default route
-app.get('/', (req, res) => {
-  res.send('🌐 API Express opérationnelle');
-});
+app.get('/', (req, res) => res.send('🌐 API Express opérationnelle'));
 
-// Lancer le serveur
 app.listen(port, () => {
   console.log(`✅ Serveur actif sur http://localhost:${port}`);
 });
