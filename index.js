@@ -1,33 +1,33 @@
-// server.js
-const express = require('express');
-const cors = require('cors');
+// index.js
 require('dotenv').config();
-
+const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// 1) Active CORS pour toutes les origines, toutes méthodes, tous headers
-
-
-// 2) Parse JSON
-app.use(express.json());
-
-// 3) Vos routes (utilisez bien des chemins relatifs dans vos fichiers de route)
-const cleanupAPI = require('./api/cleanup-plantype');
-const chatAPI = require('./api/chat');
-
-app.use('/api/cleanup', cleanupAPI);
-app.use('/api/chat', chatAPI);
-
-// 4) Root + gestion 404/500
-app.get('/', (req, res) => res.send('🌐 API Express opérationnelle'));
-app.use((req, res) => res.status(404).json({ error: 'Route non trouvée' }));
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ error: err.message });
+// 1) CORS simplissime
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,POST,PUT,PATCH,DELETE,OPTIONS'
+  );
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
 });
 
-// 5) Démarrage
+// 2) JSON parser
+app.use(express.json());
+
+// 3) Route de test
+app.get('/test', (req, res) => {
+  res.json({ message: '🔥 Serveur minimal opérationnel' });
+});
+
+// 4) Démarrage
 app.listen(port, () => {
-  console.log(`✅ Serveur actif sur http://localhost:${port}`);
+  console.log(`🚀 Server listening on port ${port}`);
 });
