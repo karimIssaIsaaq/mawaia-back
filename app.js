@@ -5,7 +5,7 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-const allowedOrigins = ['https://mawa-webapp.vercel.app'];
+const allowedOrigins = ['*'];
 
 const corsOptions = {
   origin: function (origin, callback) {
