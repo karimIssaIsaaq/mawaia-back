@@ -1,63 +1,30 @@
 // index.js
 require('dotenv').config();
 const express = require('express');
-// Catch synchronous errors
-process.on('uncaughtException', err => {
-  console.error('💥 Uncaught Exception:', err);
-  process.exit(1);
-});
-// Catch promise rejections
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
-  // Application specific logging, throwing an error, or other logic here
-});
-
 const app = express();
-
-// Simple CORS middleware
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET,POST,PUT,PATCH,DELETE,OPTIONS'
-  );
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
-  next();
-});
 
 // JSON body parser
 app.use(express.json());
 
-// Logging middleware
+// Simple CORS middleware
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} → ${req.method} ${req.originalUrl}`);
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
   next();
 });
 
 // Health-check endpoint
-app.get('/health', (req, res) => res.json({ status: 'UP' }));
+app.get('/health', (req, res) => {
+  res.json({ status: 'UP' });
+});
 
-// Try mounting cleanup router
-try {
-  const cleanupAPI = require('./api/cleanup-plantype');
-  app.use('/api/cleanup', cleanupAPI);
-  console.log('✅ cleanup-plantype router mounted');
-} catch (err) {
-  console.error('❌ Error mounting cleanup-plantype:', err);
-}
-
-// Try mounting chat router
-try {
-  const chatAPI = require('./api/chat');
-  app.use('/api/chat', chatAPI);
-  console.log('✅ chat router mounted');
-} catch (err) {
-  console.error('❌ Error mounting chat:', err);
-}
+// Mount routers
+app.use('/api/cleanup', require('./api/cleanup-plantype'));
+app.use('/api/chat',    require('./api/chat'));
 
 // 404 handler
 app.use((req, res) => {
@@ -66,11 +33,11 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('❌ Global error handler:', err);
+  console.error('Error handler:', err);
   res.status(500).json({ error: err.message });
 });
 
-// Start the server
+// Start server on the correct port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server listening on 0.0.0.0:${PORT}`);
