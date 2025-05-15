@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
   try {
     // 🔍 Vérifier le quota
     const checkRes = await fetch(
-      `${supabaseUrl}/rest/v1/ChatUsage?select=id&email=eq.${encodedEmail}&created_at=gte.${today}T00:00:00`,
+      `${supabaseUrl}/rest/v1/chatusage?select=id&email=eq.${encodedEmail}&created_at=gte.${today}T00:00:00`,
       {
         headers: {
           apikey: supabaseKey,
@@ -71,7 +71,7 @@ router.post('/', async (req, res) => {
     console.log('[✅ GPT réponse]', reply);
 
     // 📝 Insertion dans Supabase
-    const insertRes = await fetch(`${supabaseUrl}/rest/v1/ChatUsage`, {
+    const insertRes = await fetch(`${supabaseUrl}/rest/v1/chatusage`, {
       method: 'POST',
       headers: {
         apikey: supabaseKey,
