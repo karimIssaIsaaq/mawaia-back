@@ -87,7 +87,7 @@ router.post('/', async (req, res) => {
       })
     });
 
-    const insertText = await insertRes;
+    const insertText = await insertRes.statusText;
     console.log('[🗂️ Supabase] Insert:', insertText);
 
     res.status(200).json({ reply });
