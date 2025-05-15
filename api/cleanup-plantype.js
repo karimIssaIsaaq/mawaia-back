@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 require('dotenv').config();
 
-router.get('/api/cleanup', async (req, res) => {
+router.get('/', async (req, res) => {
   const { email, planType } = req.query;
 
   if (!email || !planType) {

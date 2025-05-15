@@ -3,7 +3,14 @@ const router = express.Router();
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 require('dotenv').config();
 
-router.post('/api/chat', async (req, res) => {
+router.get('/', (req, res) => {
+  res.json({ status: 'Chat API OK' });
+});
+
+
+
+router.post('/', async (req, res) => {
+  console.log("routtteeeee chatttttt")
   const { email, messages = [] } = req.body;
 
   console.log('[📥 Reçu] Email:', email);

@@ -1,53 +1,33 @@
-// index.js
+// server.js
 const express = require('express');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// 1) Manual CORS middleware — doit être le tout premier app.use()
-app.use((req, res, next) => {
-  // Autorise toutes les origines
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  // En-têtes autorisés
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  // Méthodes autorisées
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET,POST,PUT,PATCH,DELETE,OPTIONS'
-  );
-  // Répondre directement aux OPTIONS (pré-flight)
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-  next();
-});
+// 1) Active CORS pour toutes les origines, toutes méthodes, tous headers
 
-// 2) JSON body parser
+
+// 2) Parse JSON
 app.use(express.json());
 
-// 3) Monte vos routes (relatives !)
-app.use('/api/cleanup', require('./api/cleanup-plantype'));
-app.use('/api/chat',    require('./api/chat'));
+// 3) Vos routes (utilisez bien des chemins relatifs dans vos fichiers de route)
+const cleanupAPI = require('./api/cleanup-plantype');
+const chatAPI = require('./api/chat');
 
-// 4) Root & gestion d’erreurs
-app.get('/', (req, res) => {
-  res.send('✅ API Express opérationnelle (CORS ouvert)');
-});
+app.use('/api/cleanup', cleanupAPI);
+app.use('/api/chat', chatAPI);
 
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route non trouvée' });
-});
-
+// 4) Root + gestion 404/500
+app.get('/', (req, res) => res.send('🌐 API Express opérationnelle'));
+app.use((req, res) => res.status(404).json({ error: 'Route non trouvée' }));
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ error: err.message });
 });
 
-// 5) Lancement du serveur
+// 5) Démarrage
 app.listen(port, () => {
-  console.log(`🚀 Server listening on port ${port}`);
+  console.log(`✅ Serveur actif sur http://localhost:${port}`);
 });
