@@ -1,14 +1,9 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
+const express = require('express');
+const router = express.Router();
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+require('dotenv').config();
 
-dotenv.config();
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.post('/api/chat', async (req, res) => {
+router.post('/api/chat', async (req, res) => {
   const { email, messages = [] } = req.body;
 
   console.log('[📥 Reçu] Email:', email);
@@ -95,5 +90,4 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+module.exports = router;
