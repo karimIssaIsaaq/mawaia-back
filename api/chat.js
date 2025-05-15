@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 require('dotenv').config();
+import {content} from "../content";
 
 router.get('/', (req, res) => {
   res.json({ status: 'Chat API OK' });
@@ -46,9 +47,11 @@ router.post('/', async (req, res) => {
       return res.status(429).json({ error: '⛔ Limite de 20 messages atteinte pour aujourd’hui.' });
     }
 
+    const content = ""
+
     // 🧠 Appel à GPT
     const fullMessages = [
-      { role: 'system', content: 'Tu es un assistant bienveillant et précis.' },
+      content,
       ...messages
     ];
 
