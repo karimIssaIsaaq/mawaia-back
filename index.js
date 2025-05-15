@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // 1) Active CORS pour toutes les origines, toutes méthodes, tous headers
-app.use(cors());
+
 
 // 2) Parse JSON
 app.use(express.json());
