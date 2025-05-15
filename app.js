@@ -1,7 +1,21 @@
 const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+
 const app = express();
 const port = 3000;
-require('dotenv').config();
+
+// ✅ Configuration CORS
+const allowedOrigins = ['https://mawa-webapp.vercel.app'];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
+  credentials: false
+}));
+
+app.options('*', cors()); // Gérer les pré-requêtes
 
 // Middleware
 app.use(express.json());
